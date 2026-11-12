@@ -237,34 +237,64 @@ h2 { font-size: 26px; }
 .rarity[data-tier="2"] { color: var(--r-epic); }
 .rarity[data-tier="3"] { color: var(--r-legend); text-shadow: 0 0 18px rgba(255,200,0,.7); }
 
-.chest-wrap { position: relative; display: grid; place-items: center; padding: 34px 10px 10px; }
-.chest { position: relative; width: var(--w, 240px); aspect-ratio: 200/170; perspective: 700px; cursor: pointer; transition: filter .3s; }
+.chest-wrap { position: relative; display: grid; place-items: center; padding: 40px 30px 16px; }
+.chest { position: relative; width: var(--w, 240px); aspect-ratio: 200/170; perspective: 700px; cursor: pointer; z-index: 2; }
 .chest.small { --w: 150px; cursor: default; }
 .chest[data-tier="0"] { --c-box: #b8732e; --c-lid: #c9823a; --c-strap: #f2c9a0; --c-trim: #9a5a1f; --c-metal: #f7e3c8; --c-glow: #ffd58a; }
 .chest[data-tier="1"] { --c-box: #2f7fd6; --c-lid: #3b93ea; --c-strap: #cfe6ff; --c-trim: #1f5aa0; --c-metal: #eef6ff; --c-glow: #8fd3ff; }
 .chest[data-tier="2"] { --c-box: #7a3fd1; --c-lid: #8d52e6; --c-strap: #e8d5ff; --c-trim: #5a2aa0; --c-metal: #ffe08a; --c-glow: #d6a6ff; }
 .chest[data-tier="3"] { --c-box: #e0a21a; --c-lid: #f4b83a; --c-strap: #fff1c2; --c-trim: #b57a0a; --c-metal: #ffffff; --c-glow: #ffe48a; filter: drop-shadow(0 0 22px rgba(255,208,74,.55)); }
 .chest .shadow { position: absolute; left: 10%; right: 10%; bottom: -4%; height: 10%; border-radius: 50%; background: rgba(0,0,0,.3); filter: blur(3px); }
-.chest .glow { position: absolute; left: 10%; right: 10%; top: 10%; height: 50%; border-radius: 50%; background: radial-gradient(circle, var(--c-glow) 0%, transparent 70%); opacity: 0; transition: opacity .5s; }
+.chest .glow { position: absolute; left: -30%; right: -30%; top: -40%; height: 120%; border-radius: 50%; background: radial-gradient(circle, rgba(255,230,140,.95) 0%, rgba(255,210,90,.35) 35%, transparent 70%); opacity: 0; transition: opacity .35s; z-index: 0; }
 .chest.open .glow { opacity: 1; }
-.chest .inner { position: absolute; left: 4%; right: 4%; top: 41%; height: 10%; border-radius: 8px; background: #2a1a0c; }
-.chest .box { position: absolute; left: 0; right: 0; top: 41%; height: 59%; }
-.chest .lid { position: absolute; left: 0; right: 0; top: 0; height: 42%; transform-origin: 50% 100%; transition: transform .7s cubic-bezier(.3,1.4,.5,1); backface-visibility: visible; }
-.chest.open .lid { transform: rotateX(104deg); }
-.chest svg { width: 100%; height: 100%; display: block; overflow: visible; }
-.chest .loot {
-  position: absolute; left: 50%; top: 40%; transform: translate(-50%, -30%) scale(0); font-size: 100px; line-height: 1;
-  pointer-events: none; z-index: 3; filter: drop-shadow(0 6px 10px rgba(0,0,0,.4));
-}
-.chest.open .loot { animation: lootUp 1s cubic-bezier(.2,1.3,.4,1) .25s forwards; }
-@keyframes lootUp { from { transform: translate(-50%, -30%) scale(0); } to { transform: translate(-50%, -135%) scale(1); } }
-.chest.jump { animation: jump .5s; }
-@keyframes jump { 0% { transform: translateY(0) scale(1,1); } 30% { transform: translateY(-22px) scale(.94,1.1); } 60% { transform: translateY(0) scale(1.08,.9); } 80% { transform: translateY(-5px) scale(.98,1.03); } 100% { transform: none; } }
+.chest .beam { position: absolute; left: 12%; right: 12%; bottom: 50%; height: 110%; background: linear-gradient(to top, rgba(255,228,120,.8), rgba(255,228,120,0)); clip-path: polygon(24% 100%, 76% 100%, 100% 0, 0 0); transform-origin: 50% 100%; transform: scaleY(0); opacity: 0; transition: transform .45s cubic-bezier(.2,1.2,.4,1), opacity .3s; z-index: 1; }
+.chest.open .beam { transform: scaleY(1); opacity: 1; }
+.chest .inner { position: absolute; left: 4%; right: 4%; top: 41%; height: 10%; border-radius: 8px; background: #2a1a0c; z-index: 1; }
+.chest.open .inner { background: #ffe9a0; box-shadow: 0 0 30px 10px rgba(255,230,140,.8); }
+.chest .box { position: absolute; left: 0; right: 0; top: 41%; height: 59%; z-index: 2; }
+.chest .lid { position: absolute; left: 0; right: 0; top: 0; height: 42%; transform-origin: 50% 100%; transition: transform .35s cubic-bezier(.2,1.4,.4,1); z-index: 3; }
+.chest.open .lid { transform: translateY(-26%) rotateX(26deg); }
+.chest svg { width: 100%; height: 100%; display: block; overflow: visible; transition: filter .35s; }
+.chest.open svg { filter: brightness(1.35) sepia(.5) saturate(1.7); }
+.chest .star { position: absolute; width: 22px; height: 22px; background: #fff; clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); transform: scale(0); z-index: 4; pointer-events: none; }
+.chest.open .star { animation: starPop .6s ease-out both; animation-delay: var(--dl, 0s); }
+@keyframes starPop { 0% { transform: scale(0) rotate(0); } 50% { transform: scale(1.3) rotate(25deg); } 100% { transform: scale(0) rotate(45deg); } }
+
+/* entrance: squashed pop-up from below, label slides down */
+.chest.enter { animation: chestEnter .75s cubic-bezier(.2,.9,.3,1.1) both; }
+@keyframes chestEnter { 0% { transform: translateY(70px) scale(1.15, .45); opacity: 0; } 28% { opacity: 1; transform: translateY(-18px) scale(.9, 1.2); } 52% { transform: translateY(7px) scale(1.08, .92); } 74% { transform: translateY(-3px) scale(.98, 1.04); } 100% { transform: none; } }
+.rarity.enter { animation: labelIn .5s .2s ease-out both; }
+@keyframes labelIn { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: none; } }
+
+/* idle sparks: little diamonds drifting around the chest */
+.sparks { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+.sparks i { position: absolute; width: 11px; height: 11px; background: #e9d85f; clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); opacity: 0; animation: sparkFloat var(--d, 4s) ease-in-out infinite; animation-delay: var(--dl, 0s); }
+@keyframes sparkFloat { 0% { opacity: 0; transform: translateY(10px) scale(.5); } 30% { opacity: .95; transform: translateY(0) scale(1); } 65% { opacity: .7; transform: translateY(-10px) scale(.85); } 100% { opacity: 0; transform: translateY(-22px) scale(.4); } }
+
+/* tap: rocking chest + a comet arc orbiting it */
+.chest-wrap.rock .chest { animation: rock .75s cubic-bezier(.3,.7,.4,1); }
+@keyframes rock { 0% { transform: none; } 12% { transform: translateY(-10px) rotate(-12deg) scale(1.04, .96); } 30% { transform: rotate(9deg); } 48% { transform: rotate(-6deg); } 66% { transform: rotate(3.5deg); } 84% { transform: rotate(-1.5deg); } 100% { transform: none; } }
+.orbit { position: absolute; left: 50%; top: 52%; width: 150%; height: 150%; transform: translate(-50%, -50%) rotate(-14deg); overflow: visible; pointer-events: none; opacity: 0; z-index: 3; }
+.orbit.flip { transform: translate(-50%, -50%) rotate(14deg) scaleX(-1); }
+.orbit ellipse { fill: none; stroke: #ffe04a; stroke-linecap: round; stroke-dasharray: 18 82; stroke-dashoffset: 0; }
+.orbit .o1 { stroke-width: 10; }
+.orbit .o2 { stroke-width: 4; stroke-dasharray: 30 70; opacity: .75; }
+.chest-wrap.rock .orbit { animation: orbitShow .6s ease-out both; }
+.chest-wrap.rock .orbit ellipse { animation: orbitRun .6s cubic-bezier(.25,.6,.3,1) both; }
+@keyframes orbitRun { from { stroke-dashoffset: 10; } to { stroke-dashoffset: -95; } }
+@keyframes orbitShow { 0% { opacity: 0; } 8% { opacity: 1; } 75% { opacity: 1; } 100% { opacity: 0; } }
 .chest.flash { animation: flash .5s; }
 @keyframes flash { 30% { filter: brightness(1.9) saturate(1.3); } }
-.chest .swoosh { position: absolute; left: 50%; top: 55%; width: 120%; height: 40%; transform: translate(-50%, -50%); border-radius: 50%; border: 8px solid transparent; border-bottom-color: var(--gold); opacity: 0; pointer-events: none; }
-.chest.jump .swoosh { animation: swoosh .5s ease-out; }
-@keyframes swoosh { 0% { opacity: 0; rotate: -30deg; scale: .7; } 30% { opacity: 1; } 100% { opacity: 0; rotate: 40deg; scale: 1.15; } }
+
+/* opening: crouch, pop, fountain, fade away */
+.chest.squash { animation: squash .18s ease-in forwards; }
+@keyframes squash { to { transform: translateY(8px) scale(1.12, .8); } }
+.chest.open { animation: unsquash .4s cubic-bezier(.2,1.4,.4,1) forwards; }
+@keyframes unsquash { from { transform: translateY(8px) scale(1.12, .8); } 50% { transform: translateY(-12px) scale(.94, 1.1); } to { transform: none; } }
+.chest.vanish { animation: vanish .45s ease-in forwards; }
+@keyframes vanish { to { transform: translateY(34px) scale(.82); opacity: 0; } }
+#fx .gem { width: 12px; height: 22px; border-radius: 0; background: #fff; clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); animation: gemUp var(--t, .8s) cubic-bezier(.1,.8,.3,1) forwards; }
+@keyframes gemUp { from { transform: translate(var(--x), var(--y)) scale(.3); opacity: 1; } 65% { opacity: 1; } to { transform: translate(calc(var(--x) + var(--dx)), calc(var(--y) + var(--dy))) scale(1); opacity: 0; } }
 
 .dots { display: flex; gap: 14px; justify-content: center; min-height: 44px; }
 .dots i { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; font-style: normal; font-size: 22px; font-weight: 900; background: var(--surface); color: var(--muted); border: 3px solid transparent; transition: all .3s; }
@@ -272,7 +302,10 @@ h2 { font-size: 26px; }
 @keyframes pulse { 50% { transform: scale(1.1); } }
 .dots i.win { background: var(--gold); color: #5a3d00; }
 .dots i.lose { background: var(--surface); color: #7a80b0; }
-.hint { font-size: 24px; font-weight: 900; min-height: 32px; }
+.dots { transition: opacity .3s, transform .3s; }
+.dots.gone { opacity: 0; transform: translateY(8px); pointer-events: none; }
+.hint { font-size: 24px; font-weight: 900; min-height: 32px; transition: opacity .3s; }
+.hint.fade { opacity: 0; }
 .hint .hand { display: inline-block; animation: bob 1s infinite; }
 @keyframes bob { 50% { transform: translateY(6px); } }
 
@@ -280,13 +313,22 @@ h2 { font-size: 26px; }
 #scrReward { align-items: center; justify-content: center; text-align: center; gap: 14px; }
 .reward-circle {
   width: 200px; height: 200px; border-radius: 50%; display: grid; place-items: center; font-size: 116px; line-height: 1;
-  background: var(--surface); border: 10px solid var(--r-common); animation: popIn .6s; position: relative;
+  background: var(--surface); border: 10px solid var(--r-common); position: relative; z-index: 1;
 }
+.reward-circle.drop { animation: drop .85s cubic-bezier(.3,1.4,.5,1) both; }
+@keyframes drop { 0% { transform: translateY(-70px) scale(0) rotate(-45deg); opacity: 0; } 45% { opacity: 1; transform: translateY(14px) scale(1.12) rotate(10deg); } 70% { transform: translateY(-5px) scale(.96) rotate(-5deg); } 100% { transform: none; } }
+.reward-shadow { width: 150px; height: 28px; border-radius: 50%; background: rgba(0,0,0,.4); margin-top: -14px; animation: shadowIn .85s ease-out both; }
+@keyframes shadowIn { 0% { transform: scale(.2); opacity: 0; } 45% { transform: scale(1.1); opacity: 1; } 100% { transform: none; } }
 .reward-circle[data-tier="1"] { border-color: var(--r-rare); }
 .reward-circle[data-tier="2"] { border-color: var(--r-epic); }
 .reward-circle[data-tier="3"] { border-color: var(--r-legend); box-shadow: 0 0 40px rgba(255,200,0,.5); }
-.reward-name { font-family: var(--font-display); font-size: 40px; font-weight: 900; }
-.badge-new { display: inline-block; padding: 8px 16px; border-radius: 999px; background: var(--red); color: #fff; font-weight: 900; font-size: 16px; letter-spacing: .08em; animation: popIn .6s .2s both; box-shadow: 0 4px 0 var(--red-d); }
+.reward-name { font-family: var(--font-display); font-size: 42px; font-weight: 900; font-style: italic; text-transform: uppercase; letter-spacing: .02em; color: var(--r-common); text-shadow: 3px 3px 0 rgba(0,0,0,.35); min-height: 52px; }
+.reward-name[data-tier="1"] { color: var(--r-rare); } .reward-name[data-tier="2"] { color: var(--r-epic); } .reward-name[data-tier="3"] { color: var(--r-legend); }
+.reward-name span { display: inline-block; animation: letterPop .5s cubic-bezier(.3,1.6,.5,1) both; animation-delay: var(--i, 0s); white-space: pre; }
+@keyframes letterPop { 0% { transform: scale(0) translateY(16px); opacity: 0; } 60% { transform: scale(1.3) translateY(-6px); opacity: 1; } 100% { transform: none; opacity: 1; } }
+.later { animation: popLater .5s cubic-bezier(.3,1.5,.5,1) both; animation-delay: var(--dl, 1.2s); }
+@keyframes popLater { 0% { transform: scale(0); opacity: 0; } 100% { transform: none; opacity: 1; } }
+.badge-new { display: inline-block; padding: 8px 16px; border-radius: 999px; background: var(--red); color: #fff; font-weight: 900; font-size: 16px; letter-spacing: .08em; box-shadow: 0 4px 0 var(--red-d); }
 .gem-gain { font-size: 28px; font-weight: 900; color: var(--blue); }
 .bubbles { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
 .bubbles span { position: absolute; bottom: -40px; border-radius: 50%; border: 2px solid rgba(255,255,255,.7); background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.7), rgba(143,211,255,.15)); animation: rise linear forwards; }
@@ -401,15 +443,17 @@ h2 { font-size: 26px; }
     <!-- CHEST -->
     <section class="screen" id="scrChest" hidden>
       <div class="rarity" id="rarity" data-tier="0">Обычный</div>
-      <div class="chest-wrap">
+      <div class="chest-wrap" id="chestWrap">
+        <div class="sparks" id="sparks"></div>
+        <svg class="orbit" id="orbit" viewBox="0 0 300 240" aria-hidden="true"><ellipse class="o2" cx="150" cy="128" rx="138" ry="80" pathLength="100"/><ellipse class="o1" cx="150" cy="128" rx="138" ry="80" pathLength="100"/></svg>
         <div class="chest" id="chest" data-tier="0" role="button" aria-label="Сундук">
           <div class="shadow"></div>
           <div class="glow"></div>
+          <div class="beam"></div>
           <div class="inner"></div>
-          <div class="loot" id="loot"></div>
+          <i class="star" style="left:8%;top:-6%;--dl:.05s"></i><i class="star" style="left:78%;top:-10%;--dl:.15s"></i><i class="star" style="left:42%;top:-18%;--dl:.25s"></i><i class="star" style="left:92%;top:20%;--dl:.1s"></i>
           <div class="box"><svg viewBox="0 0 200 100"><rect x="8" y="0" width="184" height="92" rx="10" fill="var(--c-box)"/><rect x="8" y="30" width="184" height="3" fill="rgba(0,0,0,.14)"/><rect x="8" y="62" width="184" height="3" fill="rgba(0,0,0,.14)"/><rect x="38" y="0" width="22" height="92" rx="5" fill="var(--c-strap)"/><rect x="140" y="0" width="22" height="92" rx="5" fill="var(--c-strap)"/><circle cx="100" cy="18" r="13" fill="var(--c-metal)"/><circle cx="100" cy="16" r="3.5" fill="#3a2a12"/><rect x="98" y="16" width="4" height="8" rx="1" fill="#3a2a12"/></svg></div>
           <div class="lid"><svg viewBox="0 0 200 70"><path d="M8 70 V40 Q8 4 44 4 H156 Q192 4 192 40 V70 Z" fill="var(--c-lid)"/><rect x="8" y="60" width="184" height="10" fill="var(--c-trim)"/><rect x="38" y="4" width="22" height="66" rx="5" fill="var(--c-strap)"/><rect x="140" y="4" width="22" height="66" rx="5" fill="var(--c-strap)"/><rect x="88" y="54" width="24" height="16" rx="5" fill="var(--c-metal)"/></svg></div>
-          <div class="swoosh"></div>
         </div>
       </div>
       <div class="dots" id="dots"><i class="next">↑</i><i>↑</i><i>↑</i></div>
@@ -421,7 +465,8 @@ h2 { font-size: 26px; }
       <div class="bubbles" id="bubbles"></div>
       <div class="rarity" id="rewardRarity" data-tier="0">Обычный</div>
       <div class="reward-circle" id="rewardCircle" data-tier="0">🐔</div>
-      <div class="reward-name" id="rewardName">курочка</div>
+      <div class="reward-shadow" id="rewardShadow"></div>
+      <div class="reward-name" id="rewardName" data-tier="0">курочка</div>
       <div class="badge-new" id="rewardNew" hidden>НОВАЯ НАКЛЕЙКА!</div>
       <div class="gem-gain" id="rewardGems">+1 💎</div>
       <div class="actions row" style="width:100%;max-width:400px;margin-top:10px">
@@ -872,13 +917,38 @@ function stepDone(scene) {
 const chest = { tier: 0, taps: 0, results: [], state: 'idle' };
 const chestEl = $('chest');
 function openChestScreen() {
-  chest.tier = 0; chest.taps = 0; chest.results = []; chest.state = 'tap'; busy = false;
-  chestEl.className = 'chest'; chestEl.dataset.tier = 0;
-  $('loot').textContent = '';
-  renderRarity(); renderDots();
+  chest.tier = 0; chest.taps = 0; chest.results = []; chest.state = 'tap'; busy = true;
+  chestEl.className = 'chest enter'; chestEl.dataset.tier = 0;
+  $('chestWrap').classList.remove('rock');
+  $('dots').classList.remove('gone'); $('chestHint').classList.remove('fade');
+  const r = $('rarity'); r.classList.remove('enter'); void r.offsetWidth; r.classList.add('enter');
+  renderRarity(); renderDots(); seedSparks();
   $('chestHint').innerHTML = 'Нажми на сундук! <span class="hand">👆</span>';
   show('scrChest');
+  setTimeout(() => { chestEl.classList.remove('enter'); busy = false; }, 800);
   Voice.speak('Сундук! Нажми на него — вдруг повезёт?');
+}
+function seedSparks() {
+  const sp = $('sparks'); sp.innerHTML = '';
+  for (let i = 0; i < 9; i++) {
+    const s = document.createElement('i');
+    s.style.left = (2 + Math.random() * 96) + '%'; s.style.top = (10 + Math.random() * 85) + '%';
+    s.style.setProperty('--d', (3 + Math.random() * 3) + 's'); s.style.setProperty('--dl', (-Math.random() * 5) + 's');
+    s.style.transform = 'scale(' + (0.6 + Math.random() * 0.7) + ')';
+    sp.appendChild(s);
+  }
+}
+let orbitFlip = false;
+function fountain(x, y, n = 16) {
+  for (let i = 0; i < n; i++) {
+    const g = document.createElement('span'); g.className = 'gem';
+    const a = -Math.PI / 2 + (Math.random() - 0.5) * 1.1, d = 120 + Math.random() * 170;
+    g.style.setProperty('--x', (x + (Math.random() - 0.5) * 50) + 'px'); g.style.setProperty('--y', (y - 20) + 'px');
+    g.style.setProperty('--dx', Math.cos(a) * d + 'px'); g.style.setProperty('--dy', Math.sin(a) * d + 'px');
+    g.style.setProperty('--t', (0.6 + Math.random() * 0.5) + 's'); g.style.animationDelay = (Math.random() * 0.35) + 's';
+    const sc = 0.6 + Math.random() * 0.9; g.style.width = 12 * sc + 'px'; g.style.height = 22 * sc + 'px';
+    fx.appendChild(g); setTimeout(() => g.remove(), 1600);
+  }
 }
 function renderRarity() { const r = $('rarity'); r.dataset.tier = chest.tier; r.textContent = TIER_NAMES[chest.tier]; }
 function renderDots() {
@@ -894,8 +964,10 @@ async function onChestTap() {
   if (chest.state === 'tap') {
     busy = true;
     SFX.tap();
-    chestEl.classList.remove('jump'); void chestEl.offsetWidth; chestEl.classList.add('jump');
-    await wait(380);
+    const wrap = $('chestWrap'), orbit = $('orbit');
+    orbitFlip = !orbitFlip; orbit.classList.toggle('flip', orbitFlip);
+    wrap.classList.remove('rock'); void wrap.offsetWidth; wrap.classList.add('rock');
+    await wait(420);
     const p = UPGRADE_P[chest.tier] ?? 0;
     const win = chest.tier < 3 && Math.random() < p;
     chest.results.push(win); chest.taps++;
@@ -909,25 +981,29 @@ async function onChestTap() {
     }
     if (chest.taps >= 3 || chest.tier >= 3) {
       chest.state = 'open';
+      $('dots').classList.add('gone');
       $('chestHint').innerHTML = 'Открывай! <span class="hand">👆</span>';
       if (!win) Voice.speak('Открывай!');
     } else {
       $('chestHint').innerHTML = (3 - chest.taps === 1 ? 'Ещё разок!' : 'Нажми ещё!') + ' <span class="hand">👆</span>';
     }
     renderDots();
-    await wait(win ? 900 : 300);
+    await wait(win ? 600 : 250);
     busy = false;
   } else if (chest.state === 'open') {
     busy = true; chest.state = 'opened';
     const reward = pick(REWARDS[chest.tier]);
-    $('loot').textContent = reward.e;
-    $('chestHint').textContent = '';
+    $('chestHint').classList.add('fade'); $('rarity').classList.remove('enter');
     SFX.open();
-    await wait(800);
-    chestEl.classList.add('open');
+    chestEl.classList.add('squash');
+    await wait(180);
+    chestEl.classList.remove('squash'); chestEl.classList.add('open');
     const [x, y] = centerOf(chestEl);
-    setTimeout(() => burst(x, y - 60, { emoji: ['✨', '⭐', '💫'], n: 16, dist: 140 }), 500);
-    await wait(1500);
+    setTimeout(() => fountain(x, y - 20, 18), 300);
+    setTimeout(() => fountain(x, y - 10, 10), 750);
+    await wait(1250);
+    chestEl.classList.add('vanish');
+    await wait(420);
     grantReward(reward);
   }
 }
@@ -937,17 +1013,21 @@ function grantReward(reward) {
   S.gems += TIER_GEMS[chest.tier]; save(); renderGems();
   $('rewardRarity').dataset.tier = chest.tier; $('rewardRarity').textContent = TIER_NAMES[chest.tier];
   const rc = $('rewardCircle'); rc.dataset.tier = chest.tier; rc.textContent = reward.e;
-  $('rewardName').textContent = cap(reward.n);
-  $('rewardNew').hidden = !isNew;
-  $('rewardGems').textContent = `+${TIER_GEMS[chest.tier]} 💎`;
+  rc.classList.remove('drop'); void rc.offsetWidth; rc.classList.add('drop');
+  const sh = $('rewardShadow'); sh.style.animation = 'none'; void sh.offsetWidth; sh.style.animation = '';
+  const nm = $('rewardName'); nm.dataset.tier = chest.tier; nm.innerHTML = '';
+  [...reward.n].forEach((ch, i) => { const sp = document.createElement('span'); sp.textContent = ch; sp.style.setProperty('--i', (0.55 + i * 0.06) + 's'); nm.appendChild(sp); });
+  const nameEnd = 0.55 + reward.n.length * 0.06 + 0.3;
+  const badge = $('rewardNew'); badge.hidden = !isNew; badge.className = 'badge-new later'; badge.style.setProperty('--dl', nameEnd + 's'); void badge.offsetWidth;
+  const gm = $('rewardGems'); gm.textContent = `+${TIER_GEMS[chest.tier]} 💎`; gm.className = 'gem-gain later'; gm.style.setProperty('--dl', (nameEnd + 0.25) + 's'); void gm.offsetWidth;
   show('scrReward');
   const b = $('bubbles'); b.innerHTML = '';
   if (chest.tier >= 2 || reward.id === '🫧') {
     for (let i = 0; i < 14; i++) { const s = document.createElement('span'); const sz = 14 + Math.random() * 40; s.style.width = s.style.height = sz + 'px'; s.style.left = Math.random() * 100 + '%'; s.style.setProperty('--sway', (Math.random() * 80 - 40) + 'px'); s.style.animationDuration = (3 + Math.random() * 3) + 's'; s.style.animationDelay = (Math.random() * 1.5) + 's'; b.appendChild(s); }
   }
-  setTimeout(() => { const [x, y] = centerOf(rc); burst(x, y, { emoji: ['🎉', '✨', '⭐'], n: 16, dist: 160 }); }, 100);
+  setTimeout(() => { const [x, y] = centerOf(rc); burst(x, y, { emoji: ['🎉', '✨', '⭐'], n: 16, dist: 160 }); SFX.sparkle(); }, 420);
   busy = false;
-  Voice.speak(`${cap(reward.n)}! ${pick(PRAISE)}${isNew ? ' Новая наклейка!' : ''}`);
+  setTimeout(() => Voice.speak(`${cap(reward.n)}! ${pick(PRAISE)}${isNew ? ' Новая наклейка!' : ''}`), 450);
 }
 $('btnRewardNext').addEventListener('click', () => { startRound(); });
 $('btnRewardColl').addEventListener('click', () => { renderCollection(); show('scrCollection'); });

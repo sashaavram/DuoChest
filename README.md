@@ -32,6 +32,15 @@ Per-tap upgrade probabilities are 50 % / 35 % / 35 %. Simulated over one million
 
 Tune `UPGRADE_P` near the top of the script to change this.
 
+**Chest animation** – modelled frame by frame on a Duolingo screen recording:
+the chest pops up squashed from below and settles with a bounce while the
+rarity label slides in; small diamond sparks drift around it at rest; each tap
+rocks it with a damped wobble while a yellow comet arc orbits it (direction
+alternates per tap); opening crouches the chest, lifts the lid, turns it gold
+with light beams and a fountain of white diamonds, then fades it out; the
+reward drops in with a bounce and spin, its name pops in letter by letter, and
+the gems and «new sticker» badge follow.
+
 **Collection** – 40 stickers (10 per tier) saved in the browser's `localStorage`,
 plus a gem counter. Tap a sticker to hear its name.
 
