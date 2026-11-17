@@ -5,9 +5,9 @@ Duolingo-style reward chest: do three small tasks, get a chest, tap it three
 times for a chance to upgrade its rarity, open it, and collect the animal,
 dinosaur or gem inside.
 
-Everything is one file, `index.html`. No build step, no server, no accounts.
+The game is `index.html` plus the recorded voice in `voice-ru.js`. No server, no accounts.
 Open it in any modern browser (Safari on iPhone/iPad, Chrome on Android) and
-add it to the home screen; it works offline after the first load.
+add it to the home screen.
 
 ## What's inside
 
@@ -15,39 +15,54 @@ add it to the home screen; it works offline after the first load.
 
 | Task | What the child does | Difficulty curve |
 |---|---|---|
-| Цифры 1–10 | Hears «Покажи, где три» and taps the group with 3 items, or counts a group and taps the numeral | Starts with 1–3, adds one number for every 5 correct answers up to 10 |
+| Счёт 1–10 | Hears «Где три яблока?» and taps the group of three, or counts a group and taps the numeral. Nouns agree with the numeral: одна рыбка, две рыбки, пять рыбок | Starts with 1–3, adds one number for every 5 correct answers up to 10 |
 | Животные | Hears «Где лошадка?» and taps the right animal out of 3 (30 animals, in the diminutive forms kids use: курочка, лошадка, хрюшка…) | Fixed; this is practice |
-| Буквы | New letters get an intro card («Это буква А. А — арбуз»), then «Найди букву А» among 3 letters. Tapping a wrong letter still teaches it («Это буква Б, банан») | Starts with А О У, unlocks one letter per 4 correct answers, in primer order |
+| Буквы | New letters get an intro card («Это буква эм. Мяч.»), then «Найди букву эм» among 3 letters. Tapping a wrong letter still teaches it | Starts with А О У, unlocks one letter per 4 correct answers, in primer order |
 | Найди предмет | A scene (room, park, beach, kitchen) with 15 objects; find three in turn («Найди носок!») | Fixed; about one round in three |
 
 **Chest** – three taps, each with a chance to upgrade: Common → Rare → Epic → Legendary.
-Per-tap upgrade probabilities are 50 % / 35 % / 35 %. Simulated over one million chests:
+Per-tap upgrade probabilities are 50 % / 35 % / 35 %. Simulated over two million chests:
 
 | Tier | Share of chests | Gems |
 |---|---|---|
-| Обычный | 12.5 % | 1 |
-| Редкий | 50.0 % | 3 |
-| Эпический | 31.4 % | 5 |
+| Обычный | 12.6 % | 1 |
+| Редкий | 49.9 % | 3 |
+| Эпический | 31.5 % | 5 |
 | Легендарный | 6.1 % | 10 |
 
 Tune `UPGRADE_P` near the top of the script to change this.
 
-**Chest animation** – modelled frame by frame on a Duolingo screen recording:
-the chest pops up squashed from below and settles with a bounce while the
-rarity label slides in; small diamond sparks drift around it at rest; each tap
-rocks it with a damped wobble while a yellow comet arc orbits it (direction
-alternates per tap); opening crouches the chest, lifts the lid, turns it gold
-with light beams and a fountain of white diamonds, then fades it out; the
-reward drops in with a bounce and spin, its name pops in letter by letter, and
-the gems and «new sticker» badge follow.
+**Chest animation** – the tap wobble and orbiting comet arc are modelled on a
+Duolingo screen recording. Opening is the big moment, in four beats of about
+three seconds: the screen dims while the chest shakes harder and harder and
+light leaks from under the lid; it bursts open with a white flash, shockwaves,
+a screen shake and confetti; the reward rises out of the chest in a beam of
+light; the chest sinks away and the reward lands on a stage of spinning rays,
+its name popping in letter by letter while confetti rains. Rarer chests get
+more confetti and fireworks. An upgrade swells and flashes the chest, slams
+the new rarity label in and fires a coloured burst.
 
 **Collection** – 40 stickers (10 per tier) saved in the browser's `localStorage`,
 plus a gem counter. Tap a sticker to hear its name.
 
-**Audio** – prompts and praise use the browser's built-in Russian speech
-voice (Web Speech API; on iOS this is the «Milena» voice). Sound effects are
-synthesised with Web Audio, so there are no audio files to download. Both can
-be turned off in the parents' screen.
+**Voice** – every phrase the game can say (530 clips, about 11 minutes) is
+recorded ahead of time and shipped in `voice-ru.js`, so it sounds the same on
+every phone and does not depend on the device's speech engine. The recordings
+are made by [RHVoice](https://rhvoice.org/) (voice «Арина») with the stress of
+every word marked by hand. The device's own speech engine is used only as a
+fallback, and only if it has a real Russian voice.
+
+To change wording or add words, edit the block between `VOICE-DATA-BEGIN` and
+`VOICE-DATA-END` in `index.html` (a `+` goes before each stressed vowel) and
+re-record:
+
+```
+sudo apt-get install rhvoice rhvoice-russian ffmpeg
+node tools/build-voice.mjs            # or: node tools/build-voice.mjs victoria 95
+```
+
+**Sound effects** are synthesised with Web Audio, so there are no other audio
+files. Voice and effects can be turned off separately in the parents' screen.
 
 ## Parents' screen (⚙️ Родителям)
 
@@ -63,5 +78,6 @@ every push to `main`.
 ## Editing content
 
 All word lists are plain arrays at the top of the `<script>` in `index.html`:
-`ANIMALS`, `COUNT_ITEMS`, `LETTERS` (with a picture word per letter),
-`HIDDEN_ITEMS` (with the accusative form used in «Найди …»), `SCENES` and `REWARDS`.
+`ANIMALS`, `COUNT_ITEMS` (with gender and three number forms), `LETTERS`,
+`HIDDEN_ITEMS` (with the form used in «Найди …»), `SCENES` and `REWARDS`.
+After changing any spoken word, re-run `tools/build-voice.mjs`.
